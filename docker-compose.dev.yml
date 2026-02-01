@@ -1,0 +1,23 @@
+# Dev 환경 override
+# 기본 docker-compose.yml에 호스트 포트를 추가합니다.
+#
+# 실행:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+#
+# 개발 시 직접 접근 가능한 포트:
+#   backend : http://localhost:8080
+#   mysql   : localhost:3306  (root / ${DB_PASSWORD})
+#   redis   : localhost:6379
+
+services:
+  backend:
+    ports:
+      - "8080:8080"
+
+  mysql:
+    ports:
+      - "3306:3306"
+
+  redis:
+    ports:
+      - "6379:6379"

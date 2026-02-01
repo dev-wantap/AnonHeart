@@ -1,0 +1,77 @@
+services:
+  frontend:
+    build:
+      context: ./turtlelove-frontend
+      dockerfile: Dockerfile
+      args:
+        BUILD_MODE: production
+        VITE_API_URL: /api
+        VITE_WS_URL: /ws
+    container_name: nashville-frontend
+    ports:
+      - "3000:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - anonlove-network
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./anonLove
+      dockerfile: Dockerfile
+    container_name: nashville-backend
+    environment:
+      - DB_PASSWORD=${DB_PASSWORD:-anonlove123}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/anonlove_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - anonlove-network
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: nashville-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-anonlove123}
+      MYSQL_DATABASE: anonlove_db
+      TZ: Asia/Seoul
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - anonlove-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: nashville-redis
+    networks:
+      - anonlove-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  anonlove-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
