@@ -19,7 +19,10 @@ BACKEND_DIR="${SCRIPT_DIR}/anonLove"
 BACKEND_REPO="https://github.com/thecoldestm0ment/anonLove"
 
 if [ -d "${BACKEND_DIR}/.git" ]; then
-    ok "anonLove 디렉토리가 이미 존재합니다. 건너뜁니다."
+    ok "anonLove 이미 clone되어 있습니다. 건너뜁니다."
+elif [ -d "${BACKEND_DIR}" ]; then
+    warn "anonLove 디렉토리가 존재하지만 git 레포가 아닙니다. 덮어쓰지 않고 건너뜁니다."
+    warn "수동으로 확인하거나 디렉토리를 제거한 후 다시 실행하세요."
 else
     info "백엔드를 clone합니다: ${BACKEND_REPO}"
     git clone "${BACKEND_REPO}" "${BACKEND_DIR}"
@@ -31,7 +34,10 @@ FRONTEND_DIR="${SCRIPT_DIR}/turtlelove-frontend"
 FRONTEND_REPO="https://github.com/dev-wantap/turtlelove-frontend"
 
 if [ -d "${FRONTEND_DIR}/.git" ]; then
-    ok "turtlelove-frontend 디렉토리가 이미 존재합니다. 건너뜁니다."
+    ok "turtlelove-frontend 이미 clone되어 있습니다. 건너뜁니다."
+elif [ -d "${FRONTEND_DIR}" ]; then
+    warn "turtlelove-frontend 디렉토리가 존재하지만 git 레포가 아닙니다. 덮어쓰지 않고 건너뜁니다."
+    warn "수동으로 확인하거나 디렉토리를 제거한 후 다시 실행하세요."
 else
     info "프론트엔드를 clone합니다: ${FRONTEND_REPO}"
     git clone "${FRONTEND_REPO}" "${FRONTEND_DIR}"
