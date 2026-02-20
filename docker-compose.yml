@@ -80,6 +80,18 @@ services:
       retries: 3
     restart: unless-stopped
 
+  cloudflared:
+    image: cloudflare/cloudflared
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    env_file:
+      - .env.docker
+    networks:
+      - anonlove-network
+    depends_on:
+      - frontend
+
 networks:
   anonlove-network:
     driver: bridge
